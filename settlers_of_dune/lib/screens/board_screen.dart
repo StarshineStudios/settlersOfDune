@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:settlers_of_dune/main.dart';
 import 'package:settlers_of_dune/models/edge_grid.dart';
+import 'package:settlers_of_dune/models/enums.dart';
 import 'package:settlers_of_dune/models/hex_grid.dart';
+import 'package:settlers_of_dune/models/player.dart';
 import 'package:settlers_of_dune/models/vertex.dart';
 import 'package:settlers_of_dune/models/vertex_grid.dart';
+import 'package:settlers_of_dune/screens/player_info_box.dart';
 
 class BoardScreen extends StatefulWidget {
   const BoardScreen({super.key});
@@ -23,6 +26,8 @@ class _BoardScreenState extends State<BoardScreen> {
   void initState() {
     super.initState();
     int radius = 3; // Default radius
+    // int playerCount = 4; //Default
+
     hexGrid = HexGrid(radius);
     vertexGrid = VertexGrid();
     edgeGrid = EdgeGrid();
@@ -64,8 +69,24 @@ class _BoardScreenState extends State<BoardScreen> {
     return Offset(x, y);
   }
 
+  //THE BUILD
   @override
   Widget build(BuildContext context) {
+//TODO: make this dynamic
+    Player player1 = Player('atr', 'Atreides');
+    Player player2 = Player('har', 'Harkonnen');
+    Player player3 = Player('ben', 'Bene Gesserit');
+    Player player4 = Player('spa', 'Spacing Guild');
+    Player player5 = Player('smu', 'Smugglers');
+    Player player6 = Player('imp', 'Imperium');
+
+    //setup the players
+    List<Player> players = [player1, player2, player3, player4, player5, player6];
+
+    players[1].inventory.addResourceCard(HexType.alloy, 10);
+    players[1].inventory.addResourceCard(HexType.spice, 3);
+    players[1].inventory.addDevelopmentCard(DevelopmentCardType.soldier);
+
     // Obtain screen size
     Size screenSize = MediaQuery.of(context).size;
 
@@ -114,23 +135,28 @@ class _BoardScreenState extends State<BoardScreen> {
       appBar: AppBar(
         title: const Text('Settlers of Dune'),
       ),
-      body: Center(
-        child: InteractiveViewer(
-          boundaryMargin: const EdgeInsets.all(100),
-          minScale: 0.5,
-          maxScale: 3.0,
-          child: CustomPaint(
-            size: Size(
-              hexGrid.hexSize * sqrt(3) * (hexGrid.radius * 2 + 2),
-              hexGrid.hexSize * 1.5 * (hexGrid.radius * 2 + 2),
-            ),
-            painter: HexGridPainter(
-              hexGrid,
-              vertexGrid,
-              edgeGrid,
+      body: Row(
+        children: [
+          PlayerInfoBox(players: players),
+          Center(
+            child: InteractiveViewer(
+              boundaryMargin: const EdgeInsets.all(100),
+              minScale: 0.5,
+              maxScale: 3.0,
+              child: CustomPaint(
+                size: Size(
+                  hexGrid.hexSize * sqrt(3) * (hexGrid.radius * 2 + 2),
+                  hexGrid.hexSize * 1.5 * (hexGrid.radius * 2 + 2),
+                ),
+                painter: HexGridPainter(
+                  hexGrid,
+                  vertexGrid,
+                  edgeGrid,
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:settlers_of_dune/models/edge_grid.dart';
 import 'package:settlers_of_dune/models/enums.dart';
 import 'package:settlers_of_dune/models/hex_grid.dart';
+import 'package:settlers_of_dune/models/player.dart';
 import 'package:settlers_of_dune/models/vertex_grid.dart';
 import 'package:settlers_of_dune/screens/board_screen.dart';
 
@@ -43,36 +44,6 @@ class Road {
   Road(this.owner);
 }
 
-// Player Class (Placeholder for future implementation)
-class Player {
-  final String id;
-  final String name;
-  final Inventory inventory;
-
-  Player(this.id, this.name) : inventory = Inventory();
-}
-
-// Inventory Class (Placeholder for future implementation)
-class Inventory {
-  final Map<CardType, int> cards = {};
-
-  void addCard(CardType type, [int quantity = 1]) {
-    cards[type] = (cards[type] ?? 0) + quantity;
-  }
-
-  void removeCard(CardType type, [int quantity = 1]) {
-    if ((cards[type] ?? 0) >= quantity) {
-      cards[type] = (cards[type] ?? 0) - quantity;
-    }
-  }
-}
-
-enum CardType {
-  resource,
-  development,
-  // Add other card types as needed
-}
-
 enum BuildingType {
   settlement,
   city,
@@ -109,8 +80,8 @@ class HexGridPainter extends CustomPainter {
       ..strokeWidth = 3.0;
 
     // Calculate center offset to center the grid in the canvas
-    double gridWidth = hexSize * sqrt(3) * (hexGrid.radius * 2 + 2);
-    double gridHeight = hexSize * 1.5 * (hexGrid.radius * 2 + 2);
+    // double gridWidth = hexSize * sqrt(3) * (hexGrid.radius * 2 + 2);
+    // double gridHeight = hexSize * 1.5 * (hexGrid.radius * 2 + 2);
     Offset center = Offset(size.width / 2, size.height / 2);
 
     // Draw Hexes
