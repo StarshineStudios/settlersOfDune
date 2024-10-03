@@ -35,7 +35,13 @@ import 'package:settlers_of_dune/models/enums.dart';
 class Hex {
   final int q;
   final int r;
+  final int number;
   HexType type; // Resource type
 
-  Hex(this.q, this.r, this.type);
+  Hex(
+    this.q,
+    this.r,
+    this.type,
+    this.number,
+  );
 }

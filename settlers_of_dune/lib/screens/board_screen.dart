@@ -8,6 +8,8 @@ import 'package:settlers_of_dune/models/hex_grid.dart';
 import 'package:settlers_of_dune/models/player.dart';
 import 'package:settlers_of_dune/models/vertex.dart';
 import 'package:settlers_of_dune/models/vertex_grid.dart';
+import 'package:settlers_of_dune/screens/dice_widget.dart';
+import 'package:settlers_of_dune/screens/hex_grid_painter.dart';
 import 'package:settlers_of_dune/screens/player_info_box.dart';
 
 class BoardScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class _BoardScreenState extends State<BoardScreen> {
   late HexGrid hexGrid;
   late VertexGrid vertexGrid;
   late EdgeGrid edgeGrid;
+  int temp = 0;
 
   @override
   void initState() {
@@ -69,10 +72,8 @@ class _BoardScreenState extends State<BoardScreen> {
     return Offset(x, y);
   }
 
-  //THE BUILD
-  @override
+  //THE BUILD@override
   Widget build(BuildContext context) {
-//TODO: make this dynamic
     Player player1 = Player('atr', 'Atreides');
     Player player2 = Player('har', 'Harkonnen');
     Player player3 = Player('ben', 'Bene Gesserit');
@@ -80,34 +81,30 @@ class _BoardScreenState extends State<BoardScreen> {
     Player player5 = Player('smu', 'Smugglers');
     Player player6 = Player('imp', 'Imperium');
 
-    //setup the players
+    int turn = 0;
+    GameState gameState = GameState.setup;
+
     List<Player> players = [player1, player2, player3, player4, player5, player6];
 
     players[1].inventory.addResourceCard(HexType.alloy, 10);
     players[1].inventory.addResourceCard(HexType.spice, 3);
     players[1].inventory.addDevelopmentCard(DevelopmentCardType.soldier);
 
-    // Obtain screen size
     Size screenSize = MediaQuery.of(context).size;
 
-    // Calculate hex size based on screen size and grid radius
     double hexSize = min(
       screenSize.width / (sqrt(3) * (hexGrid.radius * 2 + 2)),
       screenSize.height / (1.5 * (hexGrid.radius * 2 + 2)),
     );
 
-    // Update hexSize in hexGrid
     hexGrid.hexSize = hexSize;
 
-    // Re-initialize hex positions based on new hexSize
     vertexGrid = VertexGrid();
     edgeGrid = EdgeGrid();
 
     for (var hex in hexGrid.hexes.values) {
-      // Get the pixel position of the hex center
       Offset hexCenter = axialToPixel(hex.q, hex.r, hexGrid.hexSize);
 
-      // Define the 6 vertices around the hex (pointy-top)
       List<Offset> hexVertices = [];
       for (int i = 0; i < 6; i++) {
         double angleDeg = 60 * i - 30;
@@ -118,12 +115,10 @@ class _BoardScreenState extends State<BoardScreen> {
         hexVertices.add(vertexPos);
       }
 
-      // Add vertices to the vertex grid
       List<Vertex> vertices = hexVertices.map((pos) {
         return vertexGrid.getOrCreateVertex(pos);
       }).toList();
 
-      // Create edges between consecutive vertices
       for (int i = 0; i < vertices.length; i++) {
         Vertex v1 = vertices[i];
         Vertex v2 = vertices[(i + 1) % vertices.length];
@@ -138,26 +133,43 @@ class _BoardScreenState extends State<BoardScreen> {
       body: Row(
         children: [
           PlayerInfoBox(players: players),
-          Center(
-            child: InteractiveViewer(
-              boundaryMargin: const EdgeInsets.all(100),
-              minScale: 0.5,
-              maxScale: 3.0,
-              child: CustomPaint(
-                size: Size(
-                  hexGrid.hexSize * sqrt(3) * (hexGrid.radius * 2 + 2),
-                  hexGrid.hexSize * 1.5 * (hexGrid.radius * 2 + 2),
-                ),
-                painter: HexGridPainter(
-                  hexGrid,
-                  vertexGrid,
-                  edgeGrid,
+          Container(
+            decoration: BoxDecoration(color: Colors.black),
+            child: Center(
+              child: InteractiveViewer(
+                boundaryMargin: const EdgeInsets.all(100),
+                minScale: 0.5,
+                maxScale: 3.0,
+                child: CustomPaint(
+                  size: Size(
+                    hexGrid.hexSize * sqrt(3) * (hexGrid.radius * 2 + 2),
+                    hexGrid.hexSize * 1.5 * (hexGrid.radius * 2 + 2),
+                  ),
+                  painter: HexGridPainter(
+                    hexGrid,
+                    vertexGrid,
+                    edgeGrid,
+                  ),
                 ),
               ),
             ),
+          ),
+          // DICE WIDGET INTEGRATION
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Temp: $temp'),
+              DiceWidget(onRoll: (rollValue) {
+                setState(() {
+                  temp += rollValue; // Increment temp by the dice roll
+                  print(rollValue);
+                });
+              }),
+            ],
           ),
         ],
       ),
     );
   }
 }
+//DEFINE DICE

@@ -12,6 +12,7 @@ class HexGrid {
   HexGrid(this.radius, {this.hexSize = 50.0}) {
     // Initialize resources
     List<HexType> resources = [];
+    List<int> numbers = [2, 2, 12, 12, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11];
 
     // Add 6 of each resource
     for (HexType type in HexType.values) {
@@ -27,6 +28,7 @@ class HexGrid {
 
     // Shuffle the resources
     resources.shuffle(Random());
+    numbers.shuffle(Random());
 
     // Ensure the number of resources matches the number of hexes
     int totalHexes = 1 + 6 + 12 + 18; // Radius 3: 37 hexes
@@ -36,12 +38,21 @@ class HexGrid {
 
     // Assign resources to hexes
     int index = 0;
+    int numberIndex = 0;
+
     for (int q = -radius; q <= radius; q++) {
       int r1 = max(-radius, -q - radius);
       int r2 = min(radius, -q + radius);
       for (int r = r1; r <= r2; r++) {
         HexType type = resources[index];
-        hexes['$q,$r'] = Hex(q, r, type);
+
+        //INITIALIZE EACH HEX RANDOM NUMBER FOR EACH HEX.
+        if (type == HexType.desert) {
+          hexes['$q,$r'] = Hex(q, r, type, 0);
+        } else {
+          hexes['$q,$r'] = Hex(q, r, type, numbers[numberIndex]);
+          numberIndex++;
+        }
         index++;
       }
     }
